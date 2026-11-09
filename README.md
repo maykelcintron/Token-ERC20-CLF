@@ -1,50 +1,78 @@
-# Remix IDE Blank Template
+# My Cyfrin CLF Token (CLF)
 
-Welcome to your new **Remix IDE Blank Workspace**!
-
-This workspace has been generated using the "Blank Template" option in Remix IDE. It starts with only minimal configuration files, giving you full control to build your project from scratch.
+A secure and modular ERC20 token smart contract developed in Solidity using the **OpenZeppelin** framework. This contract implements a role-based access control system (`AccessControl`) instead of a single owner (`Ownable`), enabling more granular management of minting permissions.
 
 ---
 
-## What's Included?
+## 🚀 Features
 
-- **`remix.config.json`**: Default Remix IDE workspace configuration.
-- **`.prettierrc.json`**: Basic Prettier formatting rules for code consistency.
-
-No contract files, folders, or sample code are included.
-
----
-
-## Getting Started
-
-1. **Create Files & Folders**
-
-   - Add new Solidity files, scripts, or folders as needed for your project.
-   - You can organize your workspace structure in any way you like.
-
-2. **Setup Project Settings** (Optional)
-
-   - Modify `remix.config.json` or add additional configuration files as your project grows.
-
-3. **Write & Compile Smart Contracts**
-
-   - Use the **Solidity Compiler** and **Deploy & Run Transactions** plugins (available in Remix IDE's left sidebar) to develop and test your contracts.
-
-4. **(Optional) Initialize Git**
-
-   - If you checked "Initialize as a Git repository" during workspace creation, you can start committing your code immediately.
+- **ERC20 Standard:** Compatible with any standard Ethereum wallet, exchange, or smart contract.
+- **Role-Based Access Control (`AccessControl`):** Separates administrative privileges from operational privileges using cryptographic roles (`DEFAULT_ADMIN_ROLE` and `MINTER_ROLE`).
+- **Controlled Minting:** Only authorized accounts with the minter role can create new tokens.
+- **OpenZeppelin v5.2.0:** Utilizes the ecosystem's most secure and audited contract libraries.
 
 ---
 
-## Useful Resources
+## 📋 Technical Specifications
 
-- [Remix IDE Documentation](https://remix-ide.readthedocs.io/)
-- [Solidity Language Documentation](https://docs.soliditylang.org/)
-- [Remix IDE Community Forum](https://forum.remix.ethereum.org/)
+- **Solidity Version:** `^0.8.26`
+- **Libraries:** `@openzeppelin/contracts@5.2.0`
+- **Token Name:** `My Cyfrin CLF Token`
+- **Symbol:** `CLF`
+- **Decimals:** `18` (default for ERC20)
 
 ---
 
-Happy coding! 🚀 
+## 🔐 Role System
 
-_Remix IDE Team_
+The contract manages two main roles that are automatically assigned to the creator (`msg.sender`) during deployment in the constructor:
 
+1. **`DEFAULT_ADMIN_ROLE`:** Global contract administrator. Can grant or revoke both the admin and minter roles to other addresses.
+2. **`MINTER_ROLE`:** Role with exclusive permissions to execute the `mint` function and create new tokens in circulation.
+
+---
+
+## 💻 Contract Code
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.26;
+
+import {ERC20} from "@openzeppelin/contracts@5.2.0/token/ERC20/ERC20.sol";
+import {AccessControl} from "@openzeppelin/contracts@5.2.0/access/AccessControl.sol";
+
+contract MyERC20 is ERC20, AccessControl {
+    bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
+
+    constructor() ERC20("My Cyfrin CLF Token", "CLF") {
+        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _grantRole(MINTER_ROLE, msg.sender);    
+    }
+
+    function mint(address to, uint256 amount) public onlyRole(MINTER_ROLE) {
+        _mint(to, amount);
+    }
+}
+```
+
+---
+
+## 🛠️ Installation and Compilation
+
+If you are using development frameworks like **Foundry** or **Hardhat**, make sure to install the specified OpenZeppelin dependencies:
+
+### With Foundry:
+```bash
+forge install OpenZeppelin/openzeppelin-contracts@v5.2.0
+```
+
+### With Hardhat (npm):
+```bash
+npm install @openzeppelin/contracts@5.2.0
+```
+
+---
+
+## 📜 License
+
+This project is licensed under the [MIT](LICENSE) license.
